@@ -98,7 +98,7 @@ const LoginPage: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-800"
-                  placeholder="admin@gizmostore.com"
+                 
                 />
               </div>
             </div>
@@ -117,7 +117,7 @@ const LoginPage: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm text-gray-900 dark:text-white bg-white dark:bg-gray-800"
-                  placeholder="admin123"
+                  
                 />
                 <button
                   type="button"
@@ -164,11 +164,7 @@ const LoginPage: React.FC = () => {
               </Button>
             </div>
             
-            <div className="text-center text-xs text-gray-500 dark:text-gray-400 mt-6">
-              <p>Demo credentials:</p>
-              <p className="mt-1">Email: admin@gizmostore.com</p>
-              <p>Password: admin123</p>
-            </div>
+         
           </form>
         </div>
       </div>
