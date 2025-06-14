@@ -10,6 +10,7 @@ import {
   monthlySalesData, 
   topProductsData 
 } from '../data/mockData';
+import { exportToCSV, formatSalesDataForExport } from '../utils/exportUtils';
 import {
   AreaChart,
   Area,
@@ -27,6 +28,8 @@ import {
 
 const SalesAnalytics: React.FC = () => {
   const [timeframe, setTimeframe] = useState<'daily' | 'weekly' | 'monthly'>('daily');
+  const [showFilters, setShowFilters] = useState(false);
+  const [dateRange, setDateRange] = useState({ start: '', end: '' });
   
   const getTimeframeData = () => {
     switch(timeframe) {
@@ -58,6 +61,34 @@ const SalesAnalytics: React.FC = () => {
     }
     return value;
   };
+
+  const handleExport = () => {
+    const dataToExport = formatSalesDataForExport(getTimeframeData(), timeframe);
+    exportToCSV(dataToExport, `sales_analytics_${timeframe}`);
+  };
+
+  const handleDateRangeExport = () => {
+    if (!dateRange.start || !dateRange.end) {
+      alert('Please select both start and end dates');
+      return;
+    }
+    
+    // Filter data based on date range
+    let filteredData = getTimeframeData();
+    
+    if (timeframe === 'daily') {
+      const startDate = new Date(dateRange.start);
+      const endDate = new Date(dateRange.end);
+      
+      filteredData = dailySalesData.filter(item => {
+        const itemDate = new Date(item.date);
+        return itemDate >= startDate && itemDate <= endDate;
+      });
+    }
+    
+    const dataToExport = formatSalesDataForExport(filteredData, timeframe);
+    exportToCSV(dataToExport, `sales_analytics_${timeframe}_${dateRange.start}_to_${dateRange.end}`);
+  };
   
   return (
     <div>
@@ -70,6 +101,7 @@ const SalesAnalytics: React.FC = () => {
               variant="outline"
               size="sm"
               leftIcon={<Filter className="w-4 h-4" />}
+              onClick={() => setShowFilters(!showFilters)}
             >
               Filter
             </Button>
@@ -84,12 +116,53 @@ const SalesAnalytics: React.FC = () => {
               variant="outline"
               size="sm"
               leftIcon={<Download className="w-4 h-4" />}
+              onClick={handleExport}
             >
               Export
             </Button>
           </div>
         }
       />
+
+      {/* Filters Panel */}
+      {showFilters && (
+        <Card className="mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Start Date
+              </label>
+              <input
+                type="date"
+                value={dateRange.start}
+                onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                End Date
+              </label>
+              <input
+                type="date"
+                value={dateRange.end}
+                onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              />
+            </div>
+            <div className="flex items-end">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleDateRangeExport}
+                leftIcon={<Download className="w-4 h-4" />}
+              >
+                Export Filtered Data
+              </Button>
+            </div>
+          </div>
+        </Card>
+      )}
       
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">

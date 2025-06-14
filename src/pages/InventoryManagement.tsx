@@ -1,30 +1,66 @@
 import React, { useState } from 'react';
-import { Package, AlertTriangle, Search, Filter } from 'lucide-react';
+import { Package, AlertTriangle, Search, Filter, Plus } from 'lucide-react';
 import PageHeader from '../components/common/PageHeader';
 import Button from '../components/common/Button';
 import Card from '../components/common/Card';
 import StatCard from '../components/common/StatCard';
+import AddProductModal from '../components/modals/AddProductModal';
 import { inventoryData } from '../data/mockData';
+import { exportToCSV, formatInventoryDataForExport } from '../utils/exportUtils';
 
 const InventoryManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedStatus, setSelectedStatus] = useState<string>('all');
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showMoreFilters, setShowMoreFilters] = useState(false);
+  const [inventory, setInventory] = useState(inventoryData);
+  const [priceRange, setPriceRange] = useState({ min: '', max: '' });
+  const [stockRange, setStockRange] = useState({ min: '', max: '' });
   
-  const categories = Array.from(new Set(inventoryData.map(item => item.category)));
-  const statuses = Array.from(new Set(inventoryData.map(item => item.status)));
+  const categories = Array.from(new Set(inventory.map(item => item.category)));
+  const statuses = Array.from(new Set(inventory.map(item => item.status)));
   
-  const filteredInventory = inventoryData.filter(item => {
+  const filteredInventory = inventory.filter(item => {
     const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
     const matchesStatus = selectedStatus === 'all' || item.status === selectedStatus;
-    return matchesSearch && matchesCategory && matchesStatus;
+    
+    // Additional filters when "More Filters" is active
+    let matchesPrice = true;
+    let matchesStock = true;
+    
+    if (showMoreFilters) {
+      if (priceRange.min || priceRange.max) {
+        // Mock price calculation based on category
+        const mockPrice = item.category === 'Smartphones' ? 800 : 
+                         item.category === 'Laptops' ? 1200 : 
+                         item.category === 'Audio' ? 300 : 400;
+        
+        if (priceRange.min && mockPrice < parseInt(priceRange.min)) matchesPrice = false;
+        if (priceRange.max && mockPrice > parseInt(priceRange.max)) matchesPrice = false;
+      }
+      
+      if (stockRange.min && item.stock < parseInt(stockRange.min)) matchesStock = false;
+      if (stockRange.max && item.stock > parseInt(stockRange.max)) matchesStock = false;
+    }
+    
+    return matchesSearch && matchesCategory && matchesStatus && matchesPrice && matchesStock;
   });
   
-  const lowStockCount = inventoryData.filter(item => item.status === 'Low Stock').length;
-  const outOfStockCount = inventoryData.filter(item => item.status === 'Out of Stock').length;
-  const totalItems = inventoryData.reduce((sum, item) => sum + item.stock, 0);
-  const averageStock = Math.round(totalItems / inventoryData.length);
+  const lowStockCount = inventory.filter(item => item.status === 'Low Stock').length;
+  const outOfStockCount = inventory.filter(item => item.status === 'Out of Stock').length;
+  const totalItems = inventory.reduce((sum, item) => sum + item.stock, 0);
+  const averageStock = Math.round(totalItems / inventory.length);
+
+  const handleAddProduct = (newProduct: any) => {
+    setInventory(prev => [...prev, newProduct]);
+  };
+
+  const handleExport = () => {
+    const dataToExport = formatInventoryDataForExport(filteredInventory);
+    exportToCSV(dataToExport, 'inventory_management');
+  };
   
   return (
     <div>
@@ -32,13 +68,24 @@ const InventoryManagement: React.FC = () => {
         title="Inventory Management"
         subtitle="Monitor and manage your product inventory"
         actions={
-          <Button
-            variant="primary"
-            size="sm"
-            leftIcon={<Package className="w-4 h-4" />}
-          >
-            Add Product
-          </Button>
+          <div className="flex space-x-3">
+            <Button
+              variant="outline"
+              size="sm"
+              leftIcon={<Package className="w-4 h-4" />}
+              onClick={handleExport}
+            >
+              Export
+            </Button>
+            <Button
+              variant="primary"
+              size="sm"
+              leftIcon={<Plus className="w-4 h-4" />}
+              onClick={() => setShowAddModal(true)}
+            >
+              Add Product
+            </Button>
+          </div>
         }
       />
       
@@ -46,7 +93,7 @@ const InventoryManagement: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         <StatCard
           title="Total Products"
-          value={inventoryData.length.toString()}
+          value={inventory.length.toString()}
           icon={<Package className="h-6 w-6 text-blue-800 dark:text-blue-400" />}
           changeText="products in inventory"
         />
@@ -118,11 +165,63 @@ const InventoryManagement: React.FC = () => {
               variant="outline"
               size="sm"
               leftIcon={<Filter className="w-4 h-4" />}
+              onClick={() => setShowMoreFilters(!showMoreFilters)}
             >
               More Filters
             </Button>
           </div>
         </div>
+
+        {/* Advanced Filters */}
+        {showMoreFilters && (
+          <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+            <h4 className="text-sm font-medium text-gray-900 dark:text-white mb-3">Advanced Filters</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Price Range ($)
+                </label>
+                <div className="flex space-x-2">
+                  <input
+                    type="number"
+                    placeholder="Min"
+                    value={priceRange.min}
+                    onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                  <input
+                    type="number"
+                    placeholder="Max"
+                    value={priceRange.max}
+                    onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Stock Range
+                </label>
+                <div className="flex space-x-2">
+                  <input
+                    type="number"
+                    placeholder="Min"
+                    value={stockRange.min}
+                    onChange={(e) => setStockRange(prev => ({ ...prev, min: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                  <input
+                    type="number"
+                    placeholder="Max"
+                    value={stockRange.max}
+                    onChange={(e) => setStockRange(prev => ({ ...prev, max: e.target.value }))}
+                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
         
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -176,7 +275,24 @@ const InventoryManagement: React.FC = () => {
             </tbody>
           </table>
         </div>
+
+        {filteredInventory.length === 0 && (
+          <div className="text-center py-8">
+            <Package className="mx-auto h-12 w-12 text-gray-400" />
+            <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No products found</h3>
+            <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+              Try adjusting your search or filter criteria.
+            </p>
+          </div>
+        )}
       </Card>
+
+      {/* Add Product Modal */}
+      <AddProductModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSubmit={handleAddProduct}
+      />
     </div>
   );
 };

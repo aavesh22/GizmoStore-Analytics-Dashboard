@@ -4,7 +4,8 @@ import PageHeader from '../components/common/PageHeader';
 import Button from '../components/common/Button';
 import Card from '../components/common/Card';
 import StatCard from '../components/common/StatCard';
-import { categorySalesData } from '../data/mockData';
+import { categorySalesData, categoryTrendDataMonthly, categoryTrendDataQuarterly, categoryTrendDataYearly } from '../data/mockData';
+import { exportToCSV, formatCategoryDataForExport } from '../utils/exportUtils';
 import {
   BarChart,
   Bar,
@@ -22,21 +23,38 @@ import {
 } from 'recharts';
 
 const CategoryAnalytics: React.FC = () => {
-  const [selectedTimeframe, setSelectedTimeframe] = useState<'month' | 'quarter' | 'year'>('month');
+  const [selectedTimeframe, setSelectedTimeframe] = useState<'monthly' | 'quarterly' | 'yearly'>('monthly');
   const [selectedView, setSelectedView] = useState<'revenue' | 'quantity'>('revenue');
+  const [showFilters, setShowFilters] = useState(false);
+  const [dateRange, setDateRange] = useState({ start: '', end: '' });
   
   // Colors for the charts
   const COLORS = ['#1E40AF', '#0D9488', '#F59E0B', '#D97706', '#84CC16', '#7C3AED'];
   
-  // Mock data for category trends over time
-  const categoryTrendData = [
-    { month: 'Jan', Smartphones: 42000, Laptops: 28000, Audio: 15000, Tablets: 12000, Accessories: 8000 },
-    { month: 'Feb', Smartphones: 44000, Laptops: 29000, Audio: 16000, Tablets: 13000, Accessories: 8500 },
-    { month: 'Mar', Smartphones: 45000, Laptops: 30000, Audio: 17000, Tablets: 14000, Accessories: 9000 },
-    { month: 'Apr', Smartphones: 47000, Laptops: 31000, Audio: 18000, Tablets: 14500, Accessories: 9500 },
-    { month: 'May', Smartphones: 50000, Laptops: 33000, Audio: 20000, Tablets: 15000, Accessories: 10000 },
-    { month: 'Jun', Smartphones: 57000, Laptops: 37000, Audio: 22000, Tablets: 17000, Accessories: 13000 }
-  ];
+  // Get trend data based on selected timeframe
+  const getTrendData = () => {
+    switch(selectedTimeframe) {
+      case 'quarterly':
+        return categoryTrendDataQuarterly;
+      case 'yearly':
+        return categoryTrendDataYearly;
+      case 'monthly':
+      default:
+        return categoryTrendDataMonthly;
+    }
+  };
+
+  const getXAxisKey = () => {
+    switch(selectedTimeframe) {
+      case 'quarterly':
+        return 'quarter';
+      case 'yearly':
+        return 'year';
+      case 'monthly':
+      default:
+        return 'month';
+    }
+  };
   
   // Calculate total revenue and quantities
   const totalRevenue = categorySalesData.reduce((sum, item) => sum + item.revenue, 0);
@@ -61,6 +79,28 @@ const CategoryAnalytics: React.FC = () => {
       return b.quantity - a.quantity;
     });
   };
+
+  const handleExport = () => {
+    const dataToExport = formatCategoryDataForExport(categorySalesData);
+    exportToCSV(dataToExport, 'category_analytics');
+  };
+
+  const handleDateRangeExport = () => {
+    if (!dateRange.start || !dateRange.end) {
+      alert('Please select both start and end dates');
+      return;
+    }
+    
+    // Filter data based on date range (mock implementation)
+    const filteredData = categorySalesData.map(item => ({
+      ...item,
+      revenue: Math.floor(item.revenue * (0.8 + Math.random() * 0.4)), // Mock filtered data
+      quantity: Math.floor(item.quantity * (0.8 + Math.random() * 0.4))
+    }));
+    
+    const dataToExport = formatCategoryDataForExport(filteredData);
+    exportToCSV(dataToExport, `category_analytics_${dateRange.start}_to_${dateRange.end}`);
+  };
   
   return (
     <div>
@@ -73,6 +113,7 @@ const CategoryAnalytics: React.FC = () => {
               variant="outline"
               size="sm"
               leftIcon={<Filter className="w-4 h-4" />}
+              onClick={() => setShowFilters(!showFilters)}
             >
               Filter
             </Button>
@@ -87,12 +128,53 @@ const CategoryAnalytics: React.FC = () => {
               variant="outline"
               size="sm"
               leftIcon={<Download className="w-4 h-4" />}
+              onClick={handleExport}
             >
               Export
             </Button>
           </div>
         }
       />
+
+      {/* Filters Panel */}
+      {showFilters && (
+        <Card className="mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Start Date
+              </label>
+              <input
+                type="date"
+                value={dateRange.start}
+                onChange={(e) => setDateRange(prev => ({ ...prev, start: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                End Date
+              </label>
+              <input
+                type="date"
+                value={dateRange.end}
+                onChange={(e) => setDateRange(prev => ({ ...prev, end: e.target.value }))}
+                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              />
+            </div>
+            <div className="flex items-end">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={handleDateRangeExport}
+                leftIcon={<Download className="w-4 h-4" />}
+              >
+                Export Filtered Data
+              </Button>
+            </div>
+          </div>
+        </Card>
+      )}
       
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
@@ -221,23 +303,23 @@ const CategoryAnalytics: React.FC = () => {
       >
         <div className="mb-4 flex space-x-2">
           <Button
-            variant={selectedTimeframe === 'month' ? 'primary' : 'outline'}
+            variant={selectedTimeframe === 'monthly' ? 'primary' : 'outline'}
             size="sm"
-            onClick={() => setSelectedTimeframe('month')}
+            onClick={() => setSelectedTimeframe('monthly')}
           >
             Monthly
           </Button>
           <Button
-            variant={selectedTimeframe === 'quarter' ? 'primary' : 'outline'}
+            variant={selectedTimeframe === 'quarterly' ? 'primary' : 'outline'}
             size="sm"
-            onClick={() => setSelectedTimeframe('quarter')}
+            onClick={() => setSelectedTimeframe('quarterly')}
           >
             Quarterly
           </Button>
           <Button
-            variant={selectedTimeframe === 'year' ? 'primary' : 'outline'}
+            variant={selectedTimeframe === 'yearly' ? 'primary' : 'outline'}
             size="sm"
-            onClick={() => setSelectedTimeframe('year')}
+            onClick={() => setSelectedTimeframe('yearly')}
           >
             Yearly
           </Button>
@@ -245,11 +327,11 @@ const CategoryAnalytics: React.FC = () => {
         
         <ResponsiveContainer width="100%" height={400}>
           <LineChart
-            data={categoryTrendData}
+            data={getTrendData()}
             margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-            <XAxis dataKey="month" stroke="#9ca3af" />
+            <XAxis dataKey={getXAxisKey()} stroke="#9ca3af" />
             <YAxis 
               tickFormatter={(value) => `$${value/1000}k`}
               stroke="#9ca3af"
@@ -273,7 +355,7 @@ const CategoryAnalytics: React.FC = () => {
               stroke="#0D9488" 
               strokeWidth={2}
               dot={{ fill: '#0D9488', strokeWidth: 2 }}
-              activationDot={{ r: 8 }}
+              activeDot={{ r: 8 }}
               animationDuration={1000}
             />
             <Line 
@@ -282,7 +364,7 @@ const CategoryAnalytics: React.FC = () => {
               stroke="#F59E0B" 
               strokeWidth={2}
               dot={{ fill: '#F59E0B', strokeWidth: 2 }}
-              activationDot={{ r: 8 }}
+              activeDot={{ r: 8 }}
               animationDuration={1000}
             />
             <Line 
@@ -291,7 +373,7 @@ const CategoryAnalytics: React.FC = () => {
               stroke="#84CC16" 
               strokeWidth={2}
               dot={{ fill: '#84CC16', strokeWidth: 2 }}
-              activationDot={{ r: 8 }}
+              activeDot={{ r: 8 }}
               animationDuration={1000}
             />
             <Line 
@@ -300,7 +382,7 @@ const CategoryAnalytics: React.FC = () => {
               stroke="#7C3AED" 
               strokeWidth={2}
               dot={{ fill: '#7C3AED', strokeWidth: 2 }}
-              activationDot={{ r: 8 }}
+              activeDot={{ r: 8 }}
               animationDuration={1000}
             />
           </LineChart>

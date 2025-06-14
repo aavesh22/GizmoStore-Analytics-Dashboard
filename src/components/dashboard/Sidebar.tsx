@@ -23,12 +23,43 @@ const Sidebar: React.FC = () => {
     { name: 'Inventory', path: '/dashboard/inventory', icon: <Package className="w-5 h-5" /> },
   ];
 
+  // New Analytics icon component based on the provided image
+  const AnalyticsIcon = () => (
+    <svg className="w-8 h-8" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+      {/* Mobile device outline */}
+      <rect x="8" y="4" width="16" height="24" rx="3" stroke="currentColor" strokeWidth="2" fill="none"/>
+      {/* Top speaker */}
+      <rect x="12" y="6" width="8" height="1" rx="0.5" fill="currentColor"/>
+      {/* Home button */}
+      <circle cx="16" cy="25" r="1" fill="currentColor"/>
+      
+      {/* Chart bars inside */}
+      <rect x="10" y="16" width="2" height="6" fill="#22D3EE" rx="1"/>
+      <rect x="13" y="14" width="2" height="8" fill="#22D3EE" rx="1"/>
+      <rect x="16" y="12" width="2" height="10" fill="#FF8C00" rx="1"/>
+      <rect x="19" y="15" width="2" height="7" fill="#22D3EE" rx="1"/>
+      
+      {/* Pie chart */}
+      <circle cx="24" cy="8" r="4" stroke="#84CC16" strokeWidth="2" fill="none"/>
+      <path d="M24 4 A4 4 0 0 1 28 8 L24 8 Z" fill="#FF8C00"/>
+      
+      {/* Connection lines */}
+      <path d="M20 8 L22 10" stroke="currentColor" strokeWidth="2"/>
+      <circle cx="6" cy="12" r="1.5" fill="currentColor"/>
+      <circle cx="6" cy="18" r="1.5" fill="currentColor"/>
+      <path d="M7.5 12 L8 12" stroke="currentColor" strokeWidth="2"/>
+      <path d="M7.5 18 L8 18" stroke="currentColor" strokeWidth="2"/>
+    </svg>
+  );
+
   return (
     <div className="fixed h-full w-64 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 z-10 transition-all duration-300">
       <div className="flex flex-col h-full">
         <div className="p-6 border-b border-gray-200 dark:border-gray-800">
           <div className="flex items-center">
-            <div className="w-8 h-8 bg-blue-800 dark:bg-blue-700 rounded flex items-center justify-center text-white font-bold">G</div>
+            <div className="w-8 h-8 text-blue-600 dark:text-blue-400">
+              <AnalyticsIcon />
+            </div>
             <span className="ml-3 text-lg font-bold text-gray-900 dark:text-white">GizmoStore</span>
           </div>
         </div>
@@ -57,14 +88,30 @@ const Sidebar: React.FC = () => {
               Settings
             </p>
             <div className="mt-3 space-y-1">
-              <button className="w-full flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors">
+              <NavLink
+                to="/dashboard/settings"
+                className={({ isActive }) => `
+                  w-full flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
+                  ${isActive 
+                    ? 'bg-blue-50 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' 
+                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'}
+                `}
+              >
                 <Settings className="mr-3 w-5 h-5" />
                 Settings
-              </button>
-              <button className="w-full flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800 transition-colors">
+              </NavLink>
+              <NavLink
+                to="/dashboard/help"
+                className={({ isActive }) => `
+                  w-full flex items-center px-3 py-2 text-sm font-medium rounded-md transition-colors
+                  ${isActive 
+                    ? 'bg-blue-50 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' 
+                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800'}
+                `}
+              >
                 <HelpCircle className="mr-3 w-5 h-5" />
                 Help & Support
-              </button>
+              </NavLink>
             </div>
           </div>
         </div>

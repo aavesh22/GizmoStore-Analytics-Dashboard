@@ -1,10 +1,11 @@
-import React from 'react';
-import { Users, MapPin, UserPlus, UserCheck } from 'lucide-react';
+import React, { useState } from 'react';
+import { Users, MapPin, UserPlus, UserCheck, Download } from 'lucide-react';
 import PageHeader from '../components/common/PageHeader';
 import Button from '../components/common/Button';
 import Card from '../components/common/Card';
 import StatCard from '../components/common/StatCard';
 import { customerLocationData, customerTypeData } from '../data/mockData';
+import { exportToCSV, formatCustomerDataForExport } from '../utils/exportUtils';
 import {
   BarChart,
   Bar,
@@ -22,6 +23,11 @@ import {
 const CustomerInsights: React.FC = () => {
   const COLORS = ['#1E40AF', '#0D9488', '#F59E0B', '#D97706', '#84CC16', '#7C3AED'];
   
+  const handleExport = () => {
+    const dataToExport = formatCustomerDataForExport(customerLocationData);
+    exportToCSV(dataToExport, 'customer_insights');
+  };
+
   return (
     <div>
       <PageHeader 
@@ -31,7 +37,8 @@ const CustomerInsights: React.FC = () => {
           <Button
             variant="primary"
             size="sm"
-            leftIcon={<Users className="w-4 h-4" />}
+            leftIcon={<Download className="w-4 h-4" />}
+            onClick={handleExport}
           >
             Export Report
           </Button>
