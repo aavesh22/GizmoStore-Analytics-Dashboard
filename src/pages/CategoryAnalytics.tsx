@@ -31,6 +31,16 @@ const CategoryAnalytics: React.FC = () => {
   // Colors for the charts
   const COLORS = ['#1E40AF', '#0D9488', '#F59E0B', '#D97706', '#84CC16', '#7C3AED'];
   
+  // Helper function to format currency in INR
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(value);
+  };
+  
   // Get trend data based on selected timeframe
   const getTrendData = () => {
     switch(selectedTimeframe) {
@@ -59,16 +69,6 @@ const CategoryAnalytics: React.FC = () => {
   // Calculate total revenue and quantities
   const totalRevenue = categorySalesData.reduce((sum, item) => sum + item.revenue, 0);
   const totalQuantity = categorySalesData.reduce((sum, item) => sum + item.quantity, 0);
-  
-  // Helper function to format currency
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0
-    }).format(value);
-  };
   
   // Sort categories by revenue or quantity based on selected view
   const getSortedCategories = () => {
@@ -271,7 +271,7 @@ const CategoryAnalytics: React.FC = () => {
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis dataKey="category" stroke="#9ca3af" />
               <YAxis 
-                tickFormatter={(value) => selectedView === 'revenue' ? `$${value/1000}k` : value.toLocaleString()}
+                tickFormatter={(value) => selectedView === 'revenue' ? `₹${(value/100000).toFixed(1)}L` : value.toLocaleString()}
                 stroke="#9ca3af" 
               />
               <Tooltip 
@@ -333,7 +333,7 @@ const CategoryAnalytics: React.FC = () => {
             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
             <XAxis dataKey={getXAxisKey()} stroke="#9ca3af" />
             <YAxis 
-              tickFormatter={(value) => `$${value/1000}k`}
+              tickFormatter={(value) => `₹${(value/100000).toFixed(1)}L`}
               stroke="#9ca3af"
             />
             <Tooltip 

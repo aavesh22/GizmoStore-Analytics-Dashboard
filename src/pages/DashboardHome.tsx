@@ -38,6 +38,16 @@ const DashboardHome: React.FC = () => {
   
   const COLORS = ['#1E40AF', '#0D9488', '#F59E0B', '#D97706', '#84CC16', '#7C3AED'];
   
+  // Helper function to format currency in INR
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(value);
+  };
+  
   return (
     <div>
       <PageHeader 
@@ -49,7 +59,7 @@ const DashboardHome: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         <StatCard
           title="Total Revenue"
-          value="$602,450"
+          value="₹50,20,450"
           icon={<DollarSign className="h-6 w-6 text-blue-800 dark:text-blue-400" />}
           change={12}
           changeText="from last month"
@@ -93,11 +103,11 @@ const DashboardHome: React.FC = () => {
                 stroke="#9ca3af"
               />
               <YAxis 
-                tickFormatter={(value) => `$${value.toLocaleString()}`}
+                tickFormatter={(value) => `₹${(value/100000).toFixed(1)}L`}
                 stroke="#9ca3af"
               />
               <Tooltip 
-                formatter={(value: number) => [`$${value.toLocaleString()}`, 'Revenue']}
+                formatter={(value: number) => [formatCurrency(value), 'Revenue']}
                 labelFormatter={(label) => new Date(label).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
               />
               <Legend />
@@ -123,8 +133,8 @@ const DashboardHome: React.FC = () => {
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis dataKey="name" stroke="#9ca3af" />
-              <YAxis tickFormatter={(value) => `$${value/1000}k`} stroke="#9ca3af" />
-              <Tooltip formatter={(value: number) => [`$${value.toLocaleString()}`, 'Revenue']} />
+              <YAxis tickFormatter={(value) => `₹${(value/100000).toFixed(1)}L`} stroke="#9ca3af" />
+              <Tooltip formatter={(value: number) => [formatCurrency(value), 'Revenue']} />
               <Legend />
               <Bar
                 dataKey="revenue"
@@ -159,7 +169,7 @@ const DashboardHome: React.FC = () => {
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip formatter={(value: number) => [`$${value.toLocaleString()}`, 'Revenue']} />
+              <Tooltip formatter={(value: number) => [formatCurrency(value), 'Revenue']} />
               <Legend />
             </PieChart>
           </ResponsiveContainer>

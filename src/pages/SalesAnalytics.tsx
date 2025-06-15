@@ -31,6 +31,16 @@ const SalesAnalytics: React.FC = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
   
+  // Helper function to format currency in INR
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(value);
+  };
+  
   const getTimeframeData = () => {
     switch(timeframe) {
       case 'weekly':
@@ -168,7 +178,7 @@ const SalesAnalytics: React.FC = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         <StatCard
           title="Total Revenue"
-          value="$602,450"
+          value="₹50,20,450"
           icon={<DollarSign className="h-6 w-6 text-blue-800 dark:text-blue-400" />}
           change={12}
           changeText="from last month"
@@ -182,7 +192,7 @@ const SalesAnalytics: React.FC = () => {
         />
         <StatCard
           title="Average Order Value"
-          value="$123.20"
+          value="₹10,270"
           icon={<DollarSign className="h-6 w-6 text-amber-600 dark:text-amber-400" />}
           change={3.5}
           changeText="from last month"
@@ -244,11 +254,11 @@ const SalesAnalytics: React.FC = () => {
               stroke="#9ca3af"
             />
             <YAxis 
-              tickFormatter={(value) => `$${value/1000}k`}
+              tickFormatter={(value) => `₹${(value/100000).toFixed(1)}L`}
               stroke="#9ca3af"
             />
             <Tooltip
-              formatter={(value: number) => [`$${value.toLocaleString()}`, 'Revenue']}
+              formatter={(value: number) => [formatCurrency(value), 'Revenue']}
               labelFormatter={(label) => {
                 if (timeframe === 'daily') {
                   return new Date(label).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
@@ -341,7 +351,7 @@ const SalesAnalytics: React.FC = () => {
                     {product.name}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                    ${product.revenue.toLocaleString()}
+                    {formatCurrency(product.revenue)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
                     {product.quantity.toLocaleString()}

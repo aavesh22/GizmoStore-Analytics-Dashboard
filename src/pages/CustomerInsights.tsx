@@ -23,6 +23,16 @@ import {
 const CustomerInsights: React.FC = () => {
   const COLORS = ['#1E40AF', '#0D9488', '#F59E0B', '#D97706', '#84CC16', '#7C3AED'];
   
+  // Helper function to format currency in INR
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(value);
+  };
+  
   const handleExport = () => {
     const dataToExport = formatCustomerDataForExport(customerLocationData);
     exportToCSV(dataToExport, 'customer_insights');
@@ -112,8 +122,8 @@ const CustomerInsights: React.FC = () => {
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
               <XAxis dataKey="city" stroke="#9ca3af" />
-              <YAxis tickFormatter={(value) => `$${value/1000}k`} stroke="#9ca3af" />
-              <Tooltip formatter={(value) => [`$${value.toLocaleString()}`, 'Revenue']} />
+              <YAxis tickFormatter={(value) => `₹${(value/100000).toFixed(1)}L`} stroke="#9ca3af" />
+              <Tooltip formatter={(value) => [formatCurrency(value), 'Revenue']} />
               <Legend />
               <Bar dataKey="revenue" fill="#1E40AF" radius={[4, 4, 0, 0]} />
             </BarChart>
@@ -151,10 +161,10 @@ const CustomerInsights: React.FC = () => {
                     {location.customers.toLocaleString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                    ${location.revenue.toLocaleString()}
+                    {formatCurrency(location.revenue)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                    ${(location.revenue / location.customers).toFixed(2)}
+                    {formatCurrency(location.revenue / location.customers)}
                   </td>
                 </tr>
               ))}

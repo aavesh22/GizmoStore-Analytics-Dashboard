@@ -43,19 +43,19 @@ export const exportToCSV = (data: any[], filename: string) => {
 export const formatSalesDataForExport = (data: any[], timeframe: string) => {
   return data.map(item => ({
     Date: timeframe === 'daily' ? new Date(item.date).toLocaleDateString() : item[timeframe === 'weekly' ? 'week' : 'month'],
-    Revenue: `$${item.revenue.toLocaleString()}`,
+    Revenue: `₹${item.revenue.toLocaleString()}`,
     Orders: item.orders.toLocaleString(),
-    'Average Order Value': `$${(item.revenue / item.orders).toFixed(2)}`
+    'Average Order Value': `₹${(item.revenue / item.orders).toFixed(2)}`
   }));
 };
 
 export const formatCategoryDataForExport = (data: any[]) => {
   return data.map(item => ({
     Category: item.category,
-    Revenue: `$${item.revenue.toLocaleString()}`,
+    Revenue: `₹${item.revenue.toLocaleString()}`,
     'Units Sold': item.quantity.toLocaleString(),
     'Market Share': `${item.share}%`,
-    'Average Price': `$${(item.revenue / item.quantity).toFixed(2)}`
+    'Average Price': `₹${(item.revenue / item.quantity).toFixed(2)}`
   }));
 };
 
@@ -63,8 +63,8 @@ export const formatCustomerDataForExport = (data: any[]) => {
   return data.map(item => ({
     City: item.city,
     Customers: item.customers.toLocaleString(),
-    Revenue: `$${item.revenue.toLocaleString()}`,
-    'Average Revenue per Customer': `$${(item.revenue / item.customers).toFixed(2)}`
+    Revenue: `₹${item.revenue.toLocaleString()}`,
+    'Average Revenue per Customer': `₹${(item.revenue / item.customers).toFixed(2)}`
   }));
 };
 
