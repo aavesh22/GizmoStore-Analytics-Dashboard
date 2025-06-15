@@ -2,16 +2,16 @@
 export const mockUsers = [
   {
     id: '1',
-    name: 'Admin User',
+    name: 'Admin',
     email: 'admin@gizmostore.com',
-    password: 'admin123',
+    password: 'admin@123',
     role: 'admin'
   },
   {
     id: '2',
-    name: 'Manager User',
+    name: 'Manager',
     email: 'manager@gizmostore.com',
-    password: 'manager123',
+    password: 'manager@123',
     role: 'manager'
   }
 ];
