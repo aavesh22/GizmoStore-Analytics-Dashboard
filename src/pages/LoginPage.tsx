@@ -172,14 +172,6 @@ const LoginPage: React.FC = () => {
                 Sign in
               </Button>
             </div>
-            
-            <div className="mt-6 p-4 bg-blue-50 rounded-md">
-              <h4 className="text-sm font-medium text-blue-800 mb-2">Demo Credentials:</h4>
-              <div className="text-xs text-blue-700 space-y-1">
-                <div><strong>Admin:</strong> admin@gizmostore.com / admin123</div>
-                <div><strong>Manager:</strong> manager@gizmostore.com / manager123</div>
-              </div>
-            </div>
           </form>
         </div>
       </div>
