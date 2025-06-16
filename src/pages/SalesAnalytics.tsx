@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calendar, Download, Filter, DollarSign, ShoppingCart } from 'lucide-react';
+import { Calendar, Download, Filter, IndianRupee, ShoppingCart } from 'lucide-react';
 import PageHeader from '../components/common/PageHeader';
 import Button from '../components/common/Button';
 import Card from '../components/common/Card';
@@ -179,7 +179,7 @@ const SalesAnalytics: React.FC = () => {
         <StatCard
           title="Total Revenue"
           value="₹50,20,450"
-          icon={<DollarSign className="h-6 w-6 text-blue-800 dark:text-blue-400" />}
+          icon={<IndianRupee className="h-6 w-6 text-blue-800 dark:text-blue-400" />}
           change={12}
           changeText="from last month"
         />
@@ -193,7 +193,7 @@ const SalesAnalytics: React.FC = () => {
         <StatCard
           title="Average Order Value"
           value="₹10,270"
-          icon={<DollarSign className="h-6 w-6 text-amber-600 dark:text-amber-400" />}
+          icon={<IndianRupee className="h-6 w-6 text-amber-600 dark:text-amber-400" />}
           change={3.5}
           changeText="from last month"
         />

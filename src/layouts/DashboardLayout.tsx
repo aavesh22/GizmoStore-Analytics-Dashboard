@@ -8,29 +8,37 @@ const DashboardLayout: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   
   return (
-    <div className="h-screen flex bg-gray-100 dark:bg-gray-900">
+    <div className="h-screen flex bg-gradient-to-br from-slate-900 via-gray-900 to-slate-800 relative">
+      {/* Subtle white overlay for depth */}
+      <div className="absolute inset-0 bg-white/[0.02] pointer-events-none"></div>
+      
+      {/* Decorative background elements */}
+      <div className="absolute top-20 left-20 w-32 h-32 bg-blue-500/5 rounded-full blur-xl pointer-events-none"></div>
+      <div className="absolute bottom-20 right-20 w-40 h-40 bg-cyan-500/5 rounded-full blur-xl pointer-events-none"></div>
+      <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-purple-500/5 rounded-full blur-xl pointer-events-none"></div>
+      
       {/* Mobile sidebar */}
       <div className={`fixed inset-0 z-20 transition-opacity ${sidebarOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
         <div 
           className="absolute inset-0 bg-gray-600 dark:bg-gray-900 opacity-75" 
           onClick={() => setSidebarOpen(false)}
         ></div>
-        <div className={`transform transition-transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} fixed inset-y-0 left-0 w-64 bg-white dark:bg-gray-900 overflow-y-auto`}>
+        <div className={`transform transition-transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} fixed inset-y-0 left-0 w-64 bg-white/10 dark:bg-gray-900/90 backdrop-blur-md overflow-y-auto border-r border-white/10`}>
           <Sidebar />
         </div>
       </div>
       
       {/* Desktop sidebar */}
-      <div className="hidden md:flex md:flex-shrink-0">
+      <div className="hidden md:flex md:flex-shrink-0 relative z-10">
         <div className="w-64">
           <Sidebar />
         </div>
       </div>
       
       {/* Main content */}
-      <div className="flex flex-col flex-1 overflow-hidden">
+      <div className="flex flex-col flex-1 overflow-hidden relative z-10">
         <div className="md:hidden">
-          <div className="bg-white dark:bg-gray-900 px-4 py-3 flex items-center shadow-sm">
+          <div className="bg-white/10 dark:bg-gray-900/90 backdrop-blur-md px-4 py-3 flex items-center shadow-sm border-b border-white/10">
             <button
               onClick={() => setSidebarOpen(true)}
               className="mr-4 text-gray-500 dark:text-gray-400 focus:outline-none"

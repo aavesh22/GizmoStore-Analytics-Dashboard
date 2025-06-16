@@ -1,6 +1,6 @@
 import React from 'react';
 import { 
-  DollarSign, 
+  IndianRupee, 
   ShoppingCart, 
   Users, 
   Package, 
@@ -60,7 +60,7 @@ const DashboardHome: React.FC = () => {
         <StatCard
           title="Total Revenue"
           value="₹50,20,450"
-          icon={<DollarSign className="h-6 w-6 text-blue-800 dark:text-blue-400" />}
+          icon={<IndianRupee className="h-6 w-6 text-blue-800 dark:text-blue-400" />}
           change={12}
           changeText="from last month"
         />
