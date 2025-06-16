@@ -105,18 +105,6 @@ yarn build
 
 The built files will be in the `dist` directory, ready for deployment.
 
-## 🔑 Demo Credentials
-
-Use these credentials to explore the dashboard:
-
-**Admin Account:**
-- Email: `admin@gizmostore.com`
-- Password: `admin@123`
-
-**Manager Account:**
-- Email: `manager@gizmostore.com`
-- Password: `manager@123`
-
 ## 📱 Features Overview
 
 ### **Dashboard Home**
@@ -264,16 +252,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Lucide** - For the beautiful icon library
 - **Recharts** - For the powerful charting library
 - **Vite** - For the lightning-fast build tool
-
-## 📞 Support
-
-For support and questions:
-- 📧 Email: support@gizmostore.com
-- 💬 Discord: [Join our community](https://discord.gg/gizmostore)
-- 📖 Documentation: [docs.gizmostore.com](https://docs.gizmostore.com)
-
----
-
-**Built with ❤️ by the GizmoStore Team**
 
 *Making e-commerce analytics beautiful and accessible for everyone.*
